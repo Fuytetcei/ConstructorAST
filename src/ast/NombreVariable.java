@@ -1,5 +1,7 @@
 package ast;
 
+import ast.eUn.E;
+
 public class NombreVariable extends E {
 	  private String nombreVariable;
 	  public NombreVariable(String nombreVariable) {

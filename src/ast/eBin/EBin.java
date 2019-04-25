@@ -1,6 +1,6 @@
 package ast.eBin;
 
-import ast.E;
+import ast.eUn.E;
 
 public abstract class EBin extends E{
 	private E opnd1;

@@ -1,7 +1,7 @@
 package ast.eBin;
 
-import ast.E;
 import ast.TipoE;
+import ast.eUn.E;
 
 public class OpMul extends EBin{
 	public OpMul(E opnd1, E opnd2) {

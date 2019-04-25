@@ -1,7 +1,7 @@
 package ast.eBin;
 
-import ast.E;
 import ast.TipoE;
+import ast.eUn.E;
 
 public class OpMenos extends EBin{
 	public OpMenos(E opnd1, E opnd2) {

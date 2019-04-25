@@ -1,4 +1,6 @@
-package ast;
+package ast.eUn;
+
+import ast.TipoE;
 
 public abstract class E {
 	public abstract TipoE tipo(); 
