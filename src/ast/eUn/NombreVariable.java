@@ -1,6 +1,6 @@
-package ast;
+package ast.eUn;
 
-import ast.eUn.E;
+import ast.TipoE;
 
 public class NombreVariable extends E {
 	  private String nombreVariable;
