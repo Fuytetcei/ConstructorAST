@@ -8,6 +8,6 @@ public class BoolFalse extends E {
 	  public BoolFalse() {
 	   this.tipoBool = "false";   
 	  }
-	  public String id() {return tipoBool;}
+	  public String valor() {return tipoBool;}
 	  public TipoE tipo() {return TipoE.FALSE;}  
 }
