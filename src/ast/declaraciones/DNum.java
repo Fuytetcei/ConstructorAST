@@ -2,13 +2,10 @@ package ast.declaraciones;
 
 public class DNum extends DS {
 	private String id;
-	private String tipoDato;
 
-	public DNum(String id) {
-		this.id = id;
-		this.tipoDato = "num";
-	}
-	public String tipoDato() {return tipoDato;}
+	public DNum(String id) {this.id = id;}
+	public String tipoDato() {return "num";}
 	public String id() {return id;}
 	public TipoDeclaracion tipo() {return TipoDeclaracion.DNUM;}
+	public String toString () {return "num " + this.id;}
 }

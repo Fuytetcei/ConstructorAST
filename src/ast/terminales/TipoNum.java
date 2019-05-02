@@ -3,10 +3,8 @@ package ast.terminales;
 import ast.expresiones.TipoE;
 
 public class TipoNum {
-	 private String tipo;
-	  public TipoNum() {
-		  this.tipo = "num";   
-	  }
-	  public String id() {return tipo;}
-	  public TipoE tipo() {return TipoE.TIPONUM;}  
+	public TipoNum() {}
+	public String id() {return "num";}
+	public TipoE tipo() {return TipoE.TIPONUM;}
+	public String toString() {return "num";}
 }

@@ -1,0 +1,141 @@
+package ascendente.asint;
+
+import java_cup.runtime.*;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import ascendente.alex.AnalizadorLexicoTiny;
+import ascendente.alex.UnidadLexica;
+import ascendente.errors.GestionErroresTiny;
+
+scan with {: return getScanner().next_token(); :};
+parser code {:
+
+	private GestionErroresTiny errores;
+	public void syntax_error(Symbol unidadLexica) {
+		System.out.println("ERROR");
+		errores.errorSintactico((UnidadLexica)unidadLexica);
+	}
+	public static void main(String[] args) throws Exception {
+	    Reader input = new InputStreamReader(new FileInputStream("src/pruebas/correcto.txt"));
+		AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
+		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(alex);
+		asint.parse();
+		System.out.println("¡¡CORRECTO!!");
+	}
+
+	// java -jar cup.jar -expect 31 -nopositions -parser AnalizadorSintacticoTiny -symbols ClaseLexica Tiny.cup
+
+	public E mkexp(String lex, E e0, E e1) {
+		if(lex.equalsIgnoreCase("==")) {
+			return new OpIgual(e0, e1);
+		} else if(lex.equalsIgnoreCase("!=")) {
+			return new OpDistinto(e0, e1);
+		} else if(lex.equalsIgnoreCase("<")) {
+			return new OpMenor(e0, e1);
+		} else if(lex.equalsIgnoreCase(">")) {
+			return new OpMayor(e0, e1);
+		} else if(lex.equalsIgnoreCase("<=")) {
+			return new OpMenorIgual(e0, e1);
+		} else if(lex.equalsIgnoreCase("=>")) {
+			return new OpMayorIgual(e0, e1);
+		} else {
+			return null;
+		}
+	}
+:};
+init with {:
+
+	errores = new GestionErroresTiny();
+	AnalizadorLexicoTiny alex = (AnalizadorLexicoTiny)getScanner();
+	alex.fijaGestionErrores(errores);
+
+:};
+
+terminal    SEPARADOR, PUNTOYCOMA, NOMBREVARIABLE, NOMBRETIPONUM, NOMBRETIPOBOOL, TRUE, FALSE,
+			OPAND, OPOR, OPASIGNAR, OPMENOSUNARIO, OPMAS, OPNOT, OPMUL, OPDIV, PAP, PCI,
+			OPMENOR, OPMAYOR, OPMENORIGUAL, OPMAYORIGUAL, OPIGUAL, OPDISTINTO, NUMERO;
+
+non terminal  S, D, DS, I, IS, P4, P3, P2, P1, P0, F, R;
+
+S	::= D: d SEPARADOR I: i
+	{:RESULT = new Programa(d, i):};
+D	::= D: d PUNTOYCOMA DS: ds
+	{:RESULT = new Dcompuesta(d, ds):};
+D	::= DS: ds
+	{:RESULT = new DSimple(ds):};
+DS	::= NOMBRETIPONUM NOMBREVARIABLE: nv
+	{:RESULT = new DNum(nv.lex():};
+DS	::= NOMBRETIPOBOOL NOMBREVARIABLE
+	{:RESULT = new DBool(nv.lex()):};
+I	::= I:i PUNTOYCOMA IS:is
+	{:RESULT = ACompuesta(i, is):};
+IS	::= IS:is
+	{:RESUL = ASimple(is):};
+IS	::= NOMBREVARIABLE:nv OPASIGNAR E4:e4
+	{:RESULT = new Asignacion(nv.lex, e4):};
+
+E4	::= OPMENOSUNARIO E4:e4
+	{:RESTULT = new OpMenosUnario(e4):};
+E4	::= OPNOT E3:e3
+	{:RESTULT = new OpNot(e3):};
+E4	::= E3:e3
+	{:RESULT = e3:};
+
+E3	::= E3_e3 OPMUL E2:e2
+	{:RESULT = new OpMul(e3, e2):};
+E3	::= E3:e3 OPDIV E2:e2
+	{:RESULT = new OpDiv(e3, e2):};
+E3	::= E2:e2
+	{:RESTUL = e2:};
+
+E2	::= E1:e10 R:r E1:e11
+	{:RESULT = mkexp(r.lex, e10, e11):};
+E2	::= E1:e1
+	{:RESULT = e1:};
+R	::= OPIGUAL:op
+	{:RESULT = op:};
+R	::= OPMENORIGUAL:op
+	{:RESULT = op:};
+R	::= OPMAYORIGUAL:op
+	{:RESULT = op:};
+R	::= OPMAYOR:op
+	{:RESULT = op:};
+R	::= OPMENOR:op
+	{:RESULT = op:};
+R	::= OPDISTINTO:op
+	{:RESULT = op:};
+
+E1	::= E0:e0 OPAND E1:e1
+	{:RESULT = new OpAnd(e0, e1):};
+E1	::= E0:e01 OPOR E0:e02
+	{:RESULT = new OpOr(e01, e02):};
+E1	::= E0:e0
+	{:RESULT = e0:};
+
+E0	::= E0:e0 OPMAS F:f
+	{:RESULT = new OpMas(e0, f):};
+E0	::= E0:e0 OPMENOSUNARIO F:f
+	{:RESULT = new OpMenos(e0, f):};
+E0	::= F:f
+	{:RESULT = f:};
+
+F	::= PAP P4:p4 PCI
+	{:RESULT = p4:};
+F	::= NOMBREVARIABLE:nv
+	{:RESULT = new NombreVariable(nv.lex):};
+F	::= TRUE
+	{:RESULT = new BoolTrue():};
+F	::= FALSE
+	{:RESULT = new BoolFalse():};
+F	::= NUMERO:n
+	{:RESULT = new Numero(n.lex):};
+
+
+
+
+
+
+
+

@@ -11,4 +11,5 @@ public class DCompuesta extends D {
 	public DS dec() {return dec;}
 	public D decs() {return decs;}
 	public TipoDeclaracion tipo() {return TipoDeclaracion.DCOMPUESTA;}
+	public String toString() {return "DCompuesta{" + this.decs.toString() + ", " + this.dec.toString() + "}";}
 }

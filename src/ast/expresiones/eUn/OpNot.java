@@ -4,8 +4,7 @@ import ast.expresiones.E;
 import ast.expresiones.TipoE;
 
 public class OpNot extends EUn {
-	public OpNot(E opnd1) {
-		super(opnd1);  
-	}     
+	public OpNot(E opnd1) {super(opnd1);}     
 	public TipoE tipo() {return TipoE.OPNOT;}
+	public String toString() {return "OpNot{" + this.opnd1() + "}";}
 }

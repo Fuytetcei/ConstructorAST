@@ -14,4 +14,6 @@ public class Programa extends S {
 	public D declaraciones() {return this.declaraciones;}
 	public I instrucciones() {return this.instrucciones;}
 	public TipoS tipo() { return TipoS.PROGRAMA;}
+
+	public String toString() {return "Programa {" +	this.declaraciones.toString() +	", &&, " + this.instrucciones.toString() + "}";}
 }

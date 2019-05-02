@@ -12,4 +12,5 @@ public class Asignacion extends IS {
 	}
 	public String id() {return this.id;}
 	public E exp() {return this.exp;}
+	public String toString() {return "Asignacion{" + this.id.toString() + ", " + this.exp.toString() + "}";}
 }

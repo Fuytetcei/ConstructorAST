@@ -4,8 +4,7 @@ import ast.expresiones.E;
 import ast.expresiones.TipoE;
 
 public class OpDiv extends EBin{
-	public OpDiv(E opnd1, E opnd2) {
-		super(opnd1,opnd2);  
-	}     
+	public OpDiv(E opnd1, E opnd2) {super(opnd1,opnd2);}     
 	public TipoE tipo() {return TipoE.OPDIV;}
+	public String toString() {return "OpDiv{" + this.opnd1().toString() + ", " + this.opnd2().toString() + "}";}
 }

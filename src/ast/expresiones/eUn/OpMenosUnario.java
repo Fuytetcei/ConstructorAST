@@ -4,8 +4,7 @@ import ast.expresiones.E;
 import ast.expresiones.TipoE;
 
 public class OpMenosUnario extends EUn {
-	public OpMenosUnario(E opnd1) {
-		super(opnd1);  
-	}     
+	public OpMenosUnario(E opnd1) {super(opnd1);}     
 	public TipoE tipo() {return TipoE.OPMENOSUNARIO;}
+	public String toString() {return "OpMenosUnario{" + this.opnd1() + "}";}
 }

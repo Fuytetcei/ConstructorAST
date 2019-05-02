@@ -12,4 +12,5 @@ public class ACompuesta extends I {
 	public I asignaciones() {return this.asignaciones;}
 	public IS asignacion() {return this.asignacion;}
 	public TipoAsignacion tipo() {return TipoAsignacion.COMPUESTA;}
+	public String toString() {return "ACompuesta{" + this.asignaciones.toString() + ", " + this.asignacion.toString() + "}";}
 }

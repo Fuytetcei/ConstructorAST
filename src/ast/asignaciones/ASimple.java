@@ -9,4 +9,5 @@ public class ASimple extends I {
 
 	public IS asignacion() {return this.asignacion;}
 	public TipoAsignacion tipo() {return TipoAsignacion.SIMPLE;}
+	public String toString() {return "ASimple{" + this.asignacion.toString() + "}";}
 }

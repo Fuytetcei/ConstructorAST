@@ -4,8 +4,7 @@ import ast.expresiones.E;
 import ast.expresiones.TipoE;
 
 public class OpMayor extends EBin{
-	public OpMayor(E opnd1, E opnd2) {
-		super(opnd1,opnd2);  
-	}     
+	public OpMayor(E opnd1, E opnd2) {super(opnd1,opnd2);}     
 	public TipoE tipo() {return TipoE.OPMAYOR;}
+	public String toString() {return "OpMayor{" + this.opnd1().toString() + ", " + this.opnd2().toString() + "}";}
 }
