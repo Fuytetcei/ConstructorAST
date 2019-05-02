@@ -1,6 +1,6 @@
 package ast.asignaciones;
 
-public class ACompuesta extends I{
+public class ACompuesta extends I {
 	private I asignaciones;
 	private IS asignacion;
 

@@ -1,6 +1,6 @@
 package ast.declaraciones;
 
-public class DCompuesta extends DS {
+public class DCompuesta extends D {
 	private DS dec;
 	private D decs;
 
