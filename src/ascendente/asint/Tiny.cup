@@ -9,6 +9,22 @@ import ascendente.alex.AnalizadorLexicoTiny;
 import ascendente.alex.UnidadLexica;
 import ascendente.errors.GestionErroresTiny;
 
+
+import ast.asignaciones.ACompuesta;
+import ast.asignaciones.ASimple;
+import ast.Programa;
+import ast.asignaciones.Asignacion;
+import ast.asignaciones.I;
+import ast.asignaciones.IS;
+import ast.declaraciones.*;
+import ast.expresiones.E;
+import ast.expresiones.eBin.*;
+import ast.expresiones.eUn.*;
+import ast.terminales.BoolFalse;
+import ast.terminales.BoolTrue;
+import ast.terminales.NombreVariable;
+import ast.terminales.Numero;
+
 scan with {: return getScanner().next_token(); :};
 parser code {:
 
@@ -21,13 +37,14 @@ parser code {:
 	    Reader input = new InputStreamReader(new FileInputStream("src/pruebas/correcto.txt"));
 		AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
 		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(alex);
-		asint.parse();
+		// asint.parse();
+		System.out.println(asint.parse().value);
 		System.out.println("¡¡CORRECTO!!");
 	}
 
 	// java -jar cup.jar -expect 31 -nopositions -parser AnalizadorSintacticoTiny -symbols ClaseLexica Tiny.cup
 
-	public E mkexp(String lex, E e0, E e1) {
+	public static E mkexp(String lex, E e0, E e1) {
 		if(lex.equalsIgnoreCase("==")) {
 			return new OpIgual(e0, e1);
 		} else if(lex.equalsIgnoreCase("!=")) {
@@ -57,80 +74,80 @@ terminal    SEPARADOR, PUNTOYCOMA, NOMBREVARIABLE, NOMBRETIPONUM, NOMBRETIPOBOOL
 			OPAND, OPOR, OPASIGNAR, OPMENOSUNARIO, OPMAS, OPNOT, OPMUL, OPDIV, PAP, PCI,
 			OPMENOR, OPMAYOR, OPMENORIGUAL, OPMAYORIGUAL, OPIGUAL, OPDISTINTO, NUMERO;
 
-non terminal  S, D, DS, I, IS, P4, P3, P2, P1, P0, F, R;
+non terminal  S, D, DS, I, IS, E4, E3, E2, E1, E0, F, R;
 
-S	::= D: d SEPARADOR I: i
-	{:RESULT = new Programa(d, i):};
+S	::= D:d SEPARADOR I:i
+	{:RESULT = new Programa((D)d, (I)i);:};
 D	::= D: d PUNTOYCOMA DS: ds
-	{:RESULT = new Dcompuesta(d, ds):};
-D	::= DS: ds
-	{:RESULT = new DSimple(ds):};
-DS	::= NOMBRETIPONUM NOMBREVARIABLE: nv
-	{:RESULT = new DNum(nv.lex():};
-DS	::= NOMBRETIPOBOOL NOMBREVARIABLE
-	{:RESULT = new DBool(nv.lex()):};
+	{:RESULT = new DCompuesta((DS)ds, (D)d);:};
+D	::= DS:ds
+	{:RESULT = new DSimple((DS)ds);:};
+DS	::= NOMBRETIPONUM NOMBREVARIABLE:nv
+	{:RESULT = new DNum((String)nv);:};
+DS	::= NOMBRETIPOBOOL NOMBREVARIABLE:nv
+	{:RESULT = new DBool((String)nv);:};
 I	::= I:i PUNTOYCOMA IS:is
-	{:RESULT = ACompuesta(i, is):};
-IS	::= IS:is
-	{:RESUL = ASimple(is):};
+	{:RESULT = new ACompuesta((I)i, (IS)is);:};
+I	::= IS:is
+	{:RESULT = new ASimple((IS)is);:};
 IS	::= NOMBREVARIABLE:nv OPASIGNAR E4:e4
-	{:RESULT = new Asignacion(nv.lex, e4):};
+	{:RESULT = new Asignacion((String)nv, (E)e4);:};
 
 E4	::= OPMENOSUNARIO E4:e4
-	{:RESTULT = new OpMenosUnario(e4):};
+	{:RESULT = new OpMenosUnario((E)e4);:};
 E4	::= OPNOT E3:e3
-	{:RESTULT = new OpNot(e3):};
+	{:RESULT = new OpNot((E)e3);:};
 E4	::= E3:e3
-	{:RESULT = e3:};
+	{:RESULT = (E)e3;:};
 
-E3	::= E3_e3 OPMUL E2:e2
-	{:RESULT = new OpMul(e3, e2):};
+E3	::= E3:e3 OPMUL E2:e2
+	{:RESULT = new OpMul((E)e3, (E)e2);:};
 E3	::= E3:e3 OPDIV E2:e2
-	{:RESULT = new OpDiv(e3, e2):};
+	{:RESULT = new OpDiv((E)e3, (E)e2);:};
 E3	::= E2:e2
-	{:RESTUL = e2:};
+	{:RESULT = (E)e2;:};
 
 E2	::= E1:e10 R:r E1:e11
-	{:RESULT = mkexp(r.lex, e10, e11):};
+	{:RESULT = AnalizadorSintacticoTiny.mkexp((String)r, (E)e10, (E)e11);:};
 E2	::= E1:e1
-	{:RESULT = e1:};
+	{:RESULT = (E)e1;:};
 R	::= OPIGUAL:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 R	::= OPMENORIGUAL:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 R	::= OPMAYORIGUAL:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 R	::= OPMAYOR:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 R	::= OPMENOR:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 R	::= OPDISTINTO:op
-	{:RESULT = op:};
+	{:RESULT = (String)op;:};
 
 E1	::= E0:e0 OPAND E1:e1
-	{:RESULT = new OpAnd(e0, e1):};
+	{:RESULT = new OpAnd((E)e0, (E)e1);:};
 E1	::= E0:e01 OPOR E0:e02
-	{:RESULT = new OpOr(e01, e02):};
+	{:RESULT = new OpOr((E)e01, (E)e02);:};
 E1	::= E0:e0
-	{:RESULT = e0:};
+	{:RESULT = (E)e0;:};
 
 E0	::= E0:e0 OPMAS F:f
-	{:RESULT = new OpMas(e0, f):};
+	{:RESULT = new OpMas((E)e0, (E)f);:};
 E0	::= E0:e0 OPMENOSUNARIO F:f
-	{:RESULT = new OpMenos(e0, f):};
+	{:RESULT = new OpMenos((E)e0, (E)f);:};
 E0	::= F:f
-	{:RESULT = f:};
+	{:RESULT = f;:};
 
-F	::= PAP P4:p4 PCI
-	{:RESULT = p4:};
+F	::= PAP E4:e4 PCI
+	{:RESULT = (E)e4;:};
 F	::= NOMBREVARIABLE:nv
-	{:RESULT = new NombreVariable(nv.lex):};
+	{:RESULT = new NombreVariable((String)nv);:};
 F	::= TRUE
-	{:RESULT = new BoolTrue():};
+	{:RESULT = new BoolTrue();:};
 F	::= FALSE
-	{:RESULT = new BoolFalse():};
+	{:RESULT = new BoolFalse();:};
 F	::= NUMERO:n
-	{:RESULT = new Numero(n.lex):};
+	{:RESULT = new Numero((String)n);:};
 
 
 
