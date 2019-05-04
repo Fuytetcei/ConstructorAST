@@ -1,0 +1,152 @@
+options  {
+  STATIC=false;
+}
+
+PARSER_BEGIN(AnalizadorSintacticoTiny)
+
+package descendente;
+
+import java.io.FileReader;
+
+import ast.Programa;
+import ast.asignaciones.ACompuesta;
+import ast.asignaciones.ASimple;
+import ast.asignaciones.Asignacion;
+import ast.asignaciones.I;
+import ast.asignaciones.IS;
+import ast.declaraciones.D;
+import ast.declaraciones.DBool;
+import ast.declaraciones.DCompuesta;
+import ast.declaraciones.DNum;
+import ast.declaraciones.DS;
+import ast.declaraciones.DSimple;
+import ast.expresiones.E;
+import ast.expresiones.eBin.OpAnd;
+import ast.expresiones.eBin.OpDistinto;
+import ast.expresiones.eBin.OpDiv;
+import ast.expresiones.eBin.OpIgual;
+import ast.expresiones.eBin.OpMas;
+import ast.expresiones.eBin.OpMayor;
+import ast.expresiones.eBin.OpMayorIgual;
+import ast.expresiones.eBin.OpMenor;
+import ast.expresiones.eBin.OpMenorIgual;
+import ast.expresiones.eBin.OpMenos;
+import ast.expresiones.eBin.OpMul;
+import ast.expresiones.eBin.OpOr;
+import ast.expresiones.eUn.OpMenosUnario;
+import ast.expresiones.eUn.OpNot;
+import ast.terminales.BoolFalse;
+import ast.terminales.BoolTrue;
+import ast.terminales.NombreVariable;
+import ast.terminales.Numero;
+
+// java -classpath "javacc.jar" javacc grammar.jj
+
+public class AnalizadorSintacticoTiny {
+
+	public static void main(String[] args) throws Exception {
+		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(new FileReader("src/pruebas/correcto.txt"));
+		Programa prg = asint.sp();
+		System.out.println(prg.toString());
+		System.out.println("CORRECTO!!");
+	}
+
+	E mkop(String op, E exp1, E exp2) {
+		if(op.equalsIgnoreCase("==")) {
+			return new OpIgual(exp1, exp2);
+		} else if(op.equalsIgnoreCase("!=")) {
+			return new OpDistinto(exp1, exp2);
+		} else if(op.equalsIgnoreCase("<")) {
+			return new OpMenor(exp1, exp2);
+		} else if(op.equalsIgnoreCase(">")) {
+			return new OpMayor(exp1, exp2);
+		} else if(op.equalsIgnoreCase("<=")) {
+			return new OpMenorIgual(exp1, exp2);
+		} else if(op.equalsIgnoreCase("=>")) {
+			return new OpMayorIgual(exp1, exp2);
+		} else {
+			return null;
+		}
+	}
+}
+
+PARSER_END(AnalizadorSintacticoTiny)
+
+	TOKEN:{<#digito:["0"-"9"]>}
+	TOKEN:{<#signo:["+","-"]>}
+	TOKEN:{<NUMERO:(<signo>)?(<digito>)+("."(<digito>)+)?(["e", "E"](<signo>)?(<digito>)+)?>}
+	TOKEN:{<SEPARADOR:"&&">}
+	TOKEN:{<PUNTOYCOMA:";">}
+	TOKEN:{<NOMBRETIPONUM:"num">}
+	TOKEN:{<NOMBRETIPOBOOL:"bool">}
+	TOKEN:{<OPMAS:"+ ">}
+	TOKEN:{<OPMENOSUNARIO:"- ">}
+	TOKEN:{<OPMUL:"*">}
+	TOKEN:{<OPDIV:"/">}
+	TOKEN:{<OPAND:"and">}
+	TOKEN:{<OPOR:"or">}
+	TOKEN:{<OPNOT:"not">}
+	TOKEN:{<TRUE:"true">}
+	TOKEN:{<FALSE:"false">}
+	TOKEN:{<OPASIGNAR:"=">}
+	TOKEN:{<OPMENOR:"<">}
+	TOKEN:{<OPMAYOR:">">}
+	TOKEN:{<OPMENORIGUAL:"<=">}
+	TOKEN:{<OPMAYORIGUAL:"=>">}
+	TOKEN:{<OPIGUAL:"==">}
+	TOKEN:{<OPDISTINTO:"!=">}
+	TOKEN:{<PAP:"(">}
+	TOKEN:{<PCI:")">}
+	TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
+	TOKEN:{<NOMBREVARIABLE:<letra>(<letra>|<digito>|"_")*>}
+	SKIP:{<["\t", " ", "\r", "\b", "\n"]>}
+
+Programa sp()	: {Programa prg;} {prg=s(){return prg;}}
+Programa s() 	: {D dec; I ins;} {dec=d() <SEPARADOR> ins=i() <EOF> {return new Programa(dec, ins);}}
+
+D d() 			: {D dec, decC; DS decS;} {decS=ds() decC=d0(decS) {return new DCompuesta(decS, decC);}}
+D d0(DS ahOfD)	: {D dec;} {<PUNTOYCOMA> dec=d(){return new DCompuesta(ahOfD, dec);} | {{return new DSimple(ahOfD);}}}
+DS ds() 		: {Token id;} {<NOMBRETIPONUM> id=<NOMBREVARIABLE> {return new DNum(id.image);} | <NOMBRETIPOBOOL> id=<NOMBREVARIABLE> {return new DBool(id.image);}}
+
+I i() 			: {I iC; IS iS;} {iS=is() iC=i0(iS) {return new ACompuesta(iC, iS);}}
+I i0(IS ahOfI) 	: {I iC;} {<PUNTOYCOMA> iC=i() {return new ACompuesta(iC, ahOfI);} | {{return new ASimple(ahOfI);}}}
+IS is() 		: {Token id;E exp;} {id=<NOMBREVARIABLE> <OPASIGNAR> exp=e4() {return new Asignacion(id.image, exp);}}
+
+E e4() 			: {E exp;} {<OPMENOSUNARIO> exp=e4() {return new OpMenosUnario(exp);} | <OPNOT> exp=e3() {return new OpNot(exp);}| exp=e3() {return exp;}}
+
+E e3() 			: {E exp1, exp2;} {exp1=e2() exp2=e32(exp1) {return exp2;}}
+E e31(E ahOfExp): {E exp;} {<OPMUL> exp=e2() {return new OpMul(ahOfExp, exp);}| <OPDIV> exp=e2() {return new OpDiv(ahOfExp, exp);}}
+E e32(E ahOfExp): {E exp1, exp2;} {exp1=e31(ahOfExp) exp2=e32(exp1) {return exp2;}| {{return ahOfExp;}}}
+
+E e2() 			: {E exp1, exp2;} {exp1=e1() exp2=e21(exp1) {return exp2;}}
+E e21(E ahOfExp): {Token op; E exp;} {op=r() exp=e1() {return mkop(op.image, ahOfExp, exp);}| {{return ahOfExp;}}}
+Token r() 		: {Token op;} {op=<OPMAYOR> {return op;}| op=<OPMENOR> {return op;}| op=<OPMENORIGUAL> {return op;}| op=<OPMAYORIGUAL> {return op;}| op=<OPDISTINTO> {return op;}}
+
+E e1() 			: {E exp1, exp2;} {exp1=e0() exp2=e12(exp1) {return exp2;}}
+E e11(E ahOfExp): {E exp;} {<OPAND> exp=e1() {return new OpAnd(ahOfExp, exp);}| <OPOR> exp=e0() {return new OpOr(ahOfExp, exp);}}
+E e12(E ahOfExp): {E exp;} {exp=e11(ahOfExp) {return exp;}| {{return ahOfExp;}}}
+
+E e0() 			: {E exp1, exp2;} {exp1=f() exp2=e02(exp1) {return exp2;}}
+E e01(E ahOfExp): {E exp;} {<OPMAS> exp=f() {return new OpMas(ahOfExp, exp);}| <OPMENOSUNARIO> exp=f() {return new OpMenos(ahOfExp, exp);}}
+E e02(E ahOfExp): {E exp1, exp2;} {exp1=e01(ahOfExp) exp2=e02(exp1) {return exp2;}| {{return ahOfExp;}}}
+E f()	 		: {E exp; Token ter;} {<PAP> exp=e4() <PCI> {return exp;}| ter=<NOMBREVARIABLE> {return new NombreVariable(ter.image);}| <TRUE> {return new BoolTrue();}| <FALSE> {return new BoolFalse();}| ter=<NUMERO> {return new Numero(ter.image);}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
