@@ -25,45 +25,41 @@ public interface AnalizadorSintacticoTinyConstants {
   /** RegularExpression Id. */
   int NOMBRETIPOBOOL = 7;
   /** RegularExpression Id. */
-  int OPMAS = 8;
+  int OPMUL = 8;
   /** RegularExpression Id. */
-  int OPMENOSUNARIO = 9;
+  int OPDIV = 9;
   /** RegularExpression Id. */
-  int OPMUL = 10;
+  int OPAND = 10;
   /** RegularExpression Id. */
-  int OPDIV = 11;
+  int OPOR = 11;
   /** RegularExpression Id. */
-  int OPAND = 12;
+  int OPNOT = 12;
   /** RegularExpression Id. */
-  int OPOR = 13;
+  int TRUE = 13;
   /** RegularExpression Id. */
-  int OPNOT = 14;
+  int FALSE = 14;
   /** RegularExpression Id. */
-  int TRUE = 15;
+  int OPASIGNAR = 15;
   /** RegularExpression Id. */
-  int FALSE = 16;
+  int OPMENOR = 16;
   /** RegularExpression Id. */
-  int OPASIGNAR = 17;
+  int OPMAYOR = 17;
   /** RegularExpression Id. */
-  int OPMENOR = 18;
+  int OPMENORIGUAL = 18;
   /** RegularExpression Id. */
-  int OPMAYOR = 19;
+  int OPMAYORIGUAL = 19;
   /** RegularExpression Id. */
-  int OPMENORIGUAL = 20;
+  int OPIGUAL = 20;
   /** RegularExpression Id. */
-  int OPMAYORIGUAL = 21;
+  int OPDISTINTO = 21;
   /** RegularExpression Id. */
-  int OPIGUAL = 22;
+  int PAP = 22;
   /** RegularExpression Id. */
-  int OPDISTINTO = 23;
+  int PCI = 23;
   /** RegularExpression Id. */
-  int PAP = 24;
+  int letra = 24;
   /** RegularExpression Id. */
-  int PCI = 25;
-  /** RegularExpression Id. */
-  int letra = 26;
-  /** RegularExpression Id. */
-  int NOMBREVARIABLE = 27;
+  int NOMBREVARIABLE = 25;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -78,8 +74,6 @@ public interface AnalizadorSintacticoTinyConstants {
     "\";\"",
     "\"num\"",
     "\"bool\"",
-    "\"+ \"",
-    "\"- \"",
     "\"*\"",
     "\"/\"",
     "\"and\"",
@@ -98,7 +92,9 @@ public interface AnalizadorSintacticoTinyConstants {
     "\")\"",
     "<letra>",
     "<NOMBREVARIABLE>",
-    "<token of kind 28>",
+    "<token of kind 26>",
+    "\"-\"",
+    "\"+\"",
   };
 
 }

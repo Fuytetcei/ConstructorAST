@@ -38,6 +38,7 @@ parser code {:
 		AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
 		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(alex);
 		// asint.parse();
+		System.out.println("ASCENDENTE:");
 		System.out.println(asint.parse().value);
 		System.out.println("¡¡CORRECTO!!");
 	}
@@ -87,7 +88,7 @@ DS	::= NOMBRETIPONUM NOMBREVARIABLE:nv
 DS	::= NOMBRETIPOBOOL NOMBREVARIABLE:nv
 	{:RESULT = new DBool((String)nv);:};
 I	::= I:i PUNTOYCOMA IS:is
-	{:RESULT = new ACompuesta((I)i, (IS)is);:};
+	{:RESULT = new ACompuesta((IS)is, (I)i);:};
 I	::= IS:is
 	{:RESULT = new ASimple((IS)is);:};
 IS	::= NOMBREVARIABLE:nv OPASIGNAR E4:e4

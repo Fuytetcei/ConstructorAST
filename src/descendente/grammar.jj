@@ -47,6 +47,7 @@ public class AnalizadorSintacticoTiny {
 	public static void main(String[] args) throws Exception {
 		AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(new FileReader("src/pruebas/correcto.txt"));
 		Programa prg = asint.sp();
+		System.out.println("DESCENDENTE:");
 		System.out.println(prg.toString());
 		System.out.println("CORRECTO!!");
 	}
@@ -79,8 +80,6 @@ PARSER_END(AnalizadorSintacticoTiny)
 	TOKEN:{<PUNTOYCOMA:";">}
 	TOKEN:{<NOMBRETIPONUM:"num">}
 	TOKEN:{<NOMBRETIPOBOOL:"bool">}
-	TOKEN:{<OPMAS:"+ ">}
-	TOKEN:{<OPMENOSUNARIO:"- ">}
 	TOKEN:{<OPMUL:"*">}
 	TOKEN:{<OPDIV:"/">}
 	TOKEN:{<OPAND:"and">}
@@ -104,15 +103,16 @@ PARSER_END(AnalizadorSintacticoTiny)
 Programa sp()	: {Programa prg;} {prg=s(){return prg;}}
 Programa s() 	: {D dec; I ins;} {dec=d() <SEPARADOR> ins=i() <EOF> {return new Programa(dec, ins);}}
 
-D d() 			: {D dec, decC; DS decS;} {decS=ds() decC=d0(decS) {return new DCompuesta(decS, decC);}}
-D d0(DS ahOfD)	: {D dec;} {<PUNTOYCOMA> dec=d(){return new DCompuesta(ahOfD, dec);} | {{return new DSimple(ahOfD);}}}
-DS ds() 		: {Token id;} {<NOMBRETIPONUM> id=<NOMBREVARIABLE> {return new DNum(id.image);} | <NOMBRETIPOBOOL> id=<NOMBREVARIABLE> {return new DBool(id.image);}}
+D d() 			: {D decS, decC;} {decS=ds() decC=d0(decS) {return decC;}}
+D d0(D ahOfD)	: {D decS; D decC;} {<PUNTOYCOMA> decS=ds() decC=d0(new DCompuesta(ahOfD.dec(), decS)) {return decC;} | {{return ahOfD;}}}
+D ds() 		: {Token id;} {<NOMBRETIPONUM> id=<NOMBREVARIABLE> {return new DSimple(new DNum(id.image));} | <NOMBRETIPOBOOL> id=<NOMBREVARIABLE> {return new DSimple(new DBool(id.image));}}
 
-I i() 			: {I iC; IS iS;} {iS=is() iC=i0(iS) {return new ACompuesta(iC, iS);}}
-I i0(IS ahOfI) 	: {I iC;} {<PUNTOYCOMA> iC=i() {return new ACompuesta(iC, ahOfI);} | {{return new ASimple(ahOfI);}}}
-IS is() 		: {Token id;E exp;} {id=<NOMBREVARIABLE> <OPASIGNAR> exp=e4() {return new Asignacion(id.image, exp);}}
+I i() 			: {I iC; I iS;} {iS=is() iC=i0(iS) {return iC;}}
+I i0(I ahOfI) 	: {I iC; I iS;} {<PUNTOYCOMA> iS=is() iC=i0(new ACompuesta(ahOfI.asignacion(), iS)){return iC;} | {{return ahOfI;}}}
+I is() 		: {Token id;E exp;} {id=<NOMBREVARIABLE> <OPASIGNAR> exp=e4() {return new ASimple(new Asignacion(id.image, exp));}}
 
-E e4() 			: {E exp;} {<OPMENOSUNARIO> exp=e4() {return new OpMenosUnario(exp);} | <OPNOT> exp=e3() {return new OpNot(exp);}| exp=e3() {return exp;}}
+E e4() 			: {E exp;} {"-" exp=e4() {return new OpMenosUnario(exp);} | <OPNOT> exp=e3() {return new OpNot(exp);}| exp=e3() {return exp;}}
+
 
 E e3() 			: {E exp1, exp2;} {exp1=e2() exp2=e32(exp1) {return exp2;}}
 E e31(E ahOfExp): {E exp;} {<OPMUL> exp=e2() {return new OpMul(ahOfExp, exp);}| <OPDIV> exp=e2() {return new OpDiv(ahOfExp, exp);}}
@@ -127,7 +127,7 @@ E e11(E ahOfExp): {E exp;} {<OPAND> exp=e1() {return new OpAnd(ahOfExp, exp);}| 
 E e12(E ahOfExp): {E exp;} {exp=e11(ahOfExp) {return exp;}| {{return ahOfExp;}}}
 
 E e0() 			: {E exp1, exp2;} {exp1=f() exp2=e02(exp1) {return exp2;}}
-E e01(E ahOfExp): {E exp;} {<OPMAS> exp=f() {return new OpMas(ahOfExp, exp);}| <OPMENOSUNARIO> exp=f() {return new OpMenos(ahOfExp, exp);}}
+E e01(E ahOfExp): {E exp;} {"+" exp=f() {return new OpMas(ahOfExp, exp);}| "-" exp=f() {return new OpMenos(ahOfExp, exp);}}
 E e02(E ahOfExp): {E exp1, exp2;} {exp1=e01(ahOfExp) exp2=e02(exp1) {return exp2;}| {{return ahOfExp;}}}
 E f()	 		: {E exp; Token ter;} {<PAP> exp=e4() <PCI> {return exp;}| ter=<NOMBREVARIABLE> {return new NombreVariable(ter.image);}| <TRUE> {return new BoolTrue();}| <FALSE> {return new BoolFalse();}| ter=<NUMERO> {return new Numero(ter.image);}}
 

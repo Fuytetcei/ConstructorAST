@@ -4,7 +4,7 @@ public class ACompuesta extends I {
 	private I asignaciones;
 	private IS asignacion;
 
-	public ACompuesta(I asignaciones, IS asignacion) {
+	public ACompuesta(IS asignacion, I asignaciones) {
 		this.asignaciones = asignaciones;
 		this.asignacion = asignacion;
 	}

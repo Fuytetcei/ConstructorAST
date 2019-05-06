@@ -15,5 +15,14 @@ public class Programa extends S {
 	public I instrucciones() {return this.instrucciones;}
 	public TipoS tipo() { return TipoS.PROGRAMA;}
 
-	public String toString() {return "Programa {" +	this.declaraciones.toString() +	", &&, " + this.instrucciones.toString() + "}";}
+	public String toString() {return "Programa {\n\t" +	this.declaraciones.toString() +	",\n\t" + this.instrucciones.toString() + "\n}";}
 }
+
+/*
+ * 
+ * 	Programa {
+		DCompuesta{DSimple{num peso}, DSimple{bool pesado}},
+		ACompuesta{ASimple{Asignacion{peso, OpDiv{OpMul{45.0, 12e-56}, OpMenos{OpMas{-002.00, 6}, 3.1e4}}}}, Asignacion{pesado, Opor{OpMayor{peso, 10.00}, OpDiv{peso, OpMenorIgual{002, +04}}}}}
+	}
+ * 
+ */

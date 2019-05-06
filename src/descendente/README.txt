@@ -38,3 +38,31 @@ aparecerá la cadena "¡¡CORRECTO!!" para indicarlo.
     	"true", "false", "(", <NUMERO>, <NOMBREVARIABLE>
     - variable_no_declarada.txt. En este fichero de prueba hay una línea con una asignación a una variable no declarada pero
     sintácticamente es correcto.
+
+
+
+D d0(D ahOfD)	: {D decS; D decC;} {<PUNTOYCOMA> decS=ds() decC=d0(new DCompuesta(ahOfD.dec(), decS))		{return decC;} 	| {{return ahOfD;}}}
+I i0(I ahOfI) 	: {I iC; I iS;} 	{<PUNTOYCOMA> iS=is() 	iC  =i0(new ACompuesta(iS.asignacion(), ahOfI))	{return iC;} 	| {{return ahOfI;}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

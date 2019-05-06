@@ -43,6 +43,7 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
         public static void main(String[] args) throws Exception {
                 AnalizadorSintacticoTiny asint = new AnalizadorSintacticoTiny(new FileReader("src/pruebas/correcto.txt"));
                 Programa prg = asint.sp();
+                System.out.println("DESCENDENTE:");
                 System.out.println(prg.toString());
                 System.out.println("CORRECTO!!");
         }
@@ -80,40 +81,41 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
     throw new Error("Missing return statement in function");
   }
 
-  final public D d() throws ParseException {D dec, decC; DS decS;
+  final public D d() throws ParseException {D decS, decC;
     decS = ds();
     decC = d0(decS);
-{if ("" != null) return new DCompuesta(decS, decC);}
+{if ("" != null) return decC;}
     throw new Error("Missing return statement in function");
   }
 
-  final public D d0(DS ahOfD) throws ParseException {D dec;
+  final public D d0(D ahOfD) throws ParseException {D decS; D decC;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case PUNTOYCOMA:{
       jj_consume_token(PUNTOYCOMA);
-      dec = d();
-{if ("" != null) return new DCompuesta(ahOfD, dec);}
+      decS = ds();
+      decC = d0(new DCompuesta(ahOfD.dec(), decS));
+{if ("" != null) return decC;}
       break;
       }
     default:
       jj_la1[0] = jj_gen;
-{{if ("" != null) return new DSimple(ahOfD);}}
+{{if ("" != null) return ahOfD;}}
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public DS ds() throws ParseException {Token id;
+  final public D ds() throws ParseException {Token id;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case NOMBRETIPONUM:{
       jj_consume_token(NOMBRETIPONUM);
       id = jj_consume_token(NOMBREVARIABLE);
-{if ("" != null) return new DNum(id.image);}
+{if ("" != null) return new DSimple(new DNum(id.image));}
       break;
       }
     case NOMBRETIPOBOOL:{
       jj_consume_token(NOMBRETIPOBOOL);
       id = jj_consume_token(NOMBREVARIABLE);
-{if ("" != null) return new DBool(id.image);}
+{if ("" != null) return new DSimple(new DBool(id.image));}
       break;
       }
     default:
@@ -124,40 +126,41 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
     throw new Error("Missing return statement in function");
   }
 
-  final public I i() throws ParseException {I iC; IS iS;
+  final public I i() throws ParseException {I iC; I iS;
     iS = is();
     iC = i0(iS);
-{if ("" != null) return new ACompuesta(iC, iS);}
+{if ("" != null) return iC;}
     throw new Error("Missing return statement in function");
   }
 
-  final public I i0(IS ahOfI) throws ParseException {I iC;
+  final public I i0(I ahOfI) throws ParseException {I iC; I iS;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case PUNTOYCOMA:{
       jj_consume_token(PUNTOYCOMA);
-      iC = i();
-{if ("" != null) return new ACompuesta(iC, ahOfI);}
+      iS = is();
+      iC = i0(new ACompuesta(ahOfI.asignacion(), iS));
+{if ("" != null) return iC;}
       break;
       }
     default:
       jj_la1[2] = jj_gen;
-{{if ("" != null) return new ASimple(ahOfI);}}
+{{if ("" != null) return ahOfI;}}
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public IS is() throws ParseException {Token id;E exp;
+  final public I is() throws ParseException {Token id;E exp;
     id = jj_consume_token(NOMBREVARIABLE);
     jj_consume_token(OPASIGNAR);
     exp = e4();
-{if ("" != null) return new Asignacion(id.image, exp);}
+{if ("" != null) return new ASimple(new Asignacion(id.image, exp));}
     throw new Error("Missing return statement in function");
   }
 
   final public E e4() throws ParseException {E exp;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case OPMENOSUNARIO:{
-      jj_consume_token(OPMENOSUNARIO);
+    case 27:{
+      jj_consume_token(27);
       exp = e4();
 {if ("" != null) return new OpMenosUnario(exp);}
       break;
@@ -344,14 +347,14 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
 
   final public E e01(E ahOfExp) throws ParseException {E exp;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case OPMAS:{
-      jj_consume_token(OPMAS);
+    case 28:{
+      jj_consume_token(28);
       exp = f();
 {if ("" != null) return new OpMas(ahOfExp, exp);}
       break;
       }
-    case OPMENOSUNARIO:{
-      jj_consume_token(OPMENOSUNARIO);
+    case 27:{
+      jj_consume_token(27);
       exp = f();
 {if ("" != null) return new OpMenos(ahOfExp, exp);}
       break;
@@ -366,8 +369,8 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
 
   final public E e02(E ahOfExp) throws ParseException {E exp1, exp2;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case OPMAS:
-    case OPMENOSUNARIO:{
+    case 27:
+    case 28:{
       exp1 = e01(ahOfExp);
       exp2 = e02(exp1);
 {if ("" != null) return exp2;}
@@ -432,7 +435,7 @@ public class AnalizadorSintacticoTiny implements AnalizadorSintacticoTinyConstan
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x20,0xc0,0x20,0x901c208,0xc00,0xc00,0xbc0000,0xbc0000,0x3000,0x3000,0x300,0x300,0x9018008,};
+      jj_la1_0 = new int[] {0x20,0xc0,0x20,0xa407008,0x300,0x300,0x2f0000,0x2f0000,0xc00,0xc00,0x18000000,0x18000000,0x2406008,};
    }
 
   /** Constructor with InputStream. */
